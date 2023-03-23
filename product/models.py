@@ -20,7 +20,14 @@ class Product(models.Model):
         return self.title
 
 
+STAR = ((iterator_, '*' * iterator_) for iterator_ in range(1, 6))
+
+
 class Review(models.Model):
     text = models.TextField(blank=True, null=True)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='review_list')
+    star = models.IntegerField(default=5, choices=STAR)
+
+    def __str__(self):
+        return self.text
 
