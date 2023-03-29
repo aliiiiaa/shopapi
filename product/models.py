@@ -29,9 +29,6 @@ class Product(models.Model):
         return sum(stars_list) // len(stars_list)
 
 
-# STAR = ((iterator_, '*' * iterator_) for iterator_ in range(1, 6))
-
-
 class Review(models.Model):
     text = models.TextField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='review_list')
