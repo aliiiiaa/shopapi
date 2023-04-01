@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from product.serializer import ProductSerializer, ReviewSerializer, CategorySerializer, RatingSerializer
-from product.models import Product, Review, Category
+from product.serializer import ProductSerializer, ReviewSerializer, CategorySerializer, RatingSerializer, TagsSerializer
+from product.models import Product, Review, Category,Tags
 from rest_framework import status
 
 
@@ -16,8 +16,10 @@ def product_list_api_view(request):
         description = request.data.get('description')
         price = request.data.get('price')
         category_id = request.data.get('category_id')
-        print(title, description, price, category_id, sep='/')
-        product = Product.objects.create(title=title, description=description, price=price, category_id=category_id)
+        tags = request.data.get('tags')
+        product = Product.objects.create(title=title, description=description, price=price,
+                                         category_id=category_id)
+        product.tags.set(tags)
         product.save()
         return Response(data=ProductSerializer(product).data)
 
@@ -40,6 +42,7 @@ def product_detail_api_view(request, id):
         product.description = request.data.get('description')
         product.price = request.data.get('price')
         product.category_id = request.data.get('category_id')
+        product.tags = request.data.get('tags')
         product.save()
         return Response(data=ProductSerializer(product).data)
 
@@ -110,6 +113,28 @@ def category_detail_api_view(request, id):
         category.name = request.data.get('name')
         category.save()
         return Response(data=CategorySerializer(category).data)
+
+
+@api_view(['GET', 'POST'])
+def tags_list_api_view(request):
+    if request.method == 'GET':
+        tags = Tags.objects.all()
+        serializer = TagsSerializer(tags, many=True)
+        return Response(data=serializer.data)
+    elif request.method == 'POST':
+        name = request.data.get('name')
+        tags = Tags.objects.create(name=name)
+        tags.save()
+        return Response(data=TagsSerializer(tags).data)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def tags_detail_api_view(request, id):
+    try:
+        tags = Tags.objects.get(id=id)
+    except tags.DoesNotExist:
+        return Response(data={'error': 'tags not found!'},
+                        status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
