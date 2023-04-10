@@ -8,6 +8,7 @@ from rest_framework import status
 @api_view(['GET', 'POST'])
 def product_list_api_view(request):
     if request.method == 'GET':
+        """list of product"""
         product = Product.objects.all()
         serializer = ProductSerializer(product, many=True)
         return Response(data=serializer.data)
